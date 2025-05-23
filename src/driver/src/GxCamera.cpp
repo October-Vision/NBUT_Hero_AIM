@@ -4,7 +4,7 @@ pthread_mutex_t Globalmutex; // threads conflict due to image-updating
 //extern pthread_cond_t GlobalCondCV; // threads conflict due to image-updating
 //extern bool imageReadable;          // threads conflict due to image-updating
 //cv::Mat src;                     // Transfering buffer
-namespace ly {
+namespace nw {
     GxCamera::GxCamera() {
         g_hDevice = nullptr;                     ///< Device handle
         g_pDeviceSN = (char*)"KE0200060394";

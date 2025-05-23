@@ -1,0 +1,49 @@
+#include "VideoCapture.h"
+
+using namespace nw;
+using namespace cv;
+
+void DaHenCamera::open(){
+    camera->initLib();
+    camera->openDevice(CameraParam::sn.c_str());
+    camera->setRoiParam(width, height, offset_x, offset_y);
+    camera->setExposureGainParam( false, false, CameraParam::exposure_time, 1000, 3000, CameraParam::gain, 3, 10, 127,true);
+    camera->setWhiteBalanceParam(true,GX_AWB_LAMP_HOUSE_ADAPTIVE);
+    camera->acquisitionStart();
+}
+
+void DaHenCamera::startCapture(Params_ToVideo &params){
+    _video_thread_params.fream_pp =params_to_video.frame_pp;
+    int id=0;
+    constexpr int size=10;
+    Image frame[size];
+    for(auto& m:frame)m.mat=new Mat(Size(CameraParam::width,CameraParam::height),CV_32FC3);//初始化大小
+    std::chrono::steady_clock::time_point start,end;
+    do{
+        unique_lock<mutex>umtx_video(Thread::mtx_video);//上锁
+        while (Thread::image_is_update)
+        {
+            Thread::cond_is_process.wait(umtx_video);
+        }
+        start = std::chrono::steady_clock::now();
+        camera->ProcGetImage(frame[id].mat, &start);
+        end = std::chrono::steady_clock::now();
+        double delta_t=std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count()/1000.0;
+        frame[id].time_stamp = start+(end-start)/2;
+        frame[id].imu_data=SerialParam::recv_data;
+        *_video_thread_params.fream_pp = frame[id];
+        Thread::image_is_update = true;//图像更新后
+        Thread::cond_is_update.notify_one();//唤醒正在等待cond_is_update的线程
+        umtx_video.unlock();//解锁
+        id=(id+1)%size;
+        LOG_IF(ERROR,(*_video_thread_params.fream_pp)->mat.empty()) << "frame is empty";
+    }   while(!(*_video_thread_params.fream_pp)->mat.empty());
+}
+
+DaHenCamera::DaHenCamera(){
+    camera=new GxCamera();
+}
+
+DaHenCamera::~DaHenCamera(){
+    delete camera;
+}

@@ -8,7 +8,7 @@
 #include "SerialPort.h"
 #include "GxCamera.h"
 #include "Thread.h"
-#include "MvCameraControl.h"
+#include "HikCamera.h" 
 using namespace cv;
 namespace nw{
     void *saveFrameToNavtive(void *params_p);
