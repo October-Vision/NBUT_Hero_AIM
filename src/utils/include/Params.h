@@ -1,7 +1,7 @@
 #ifndef AUTOAIM_PARAMS_H
 #define AUTOAIM_PARAMS_H
 #include <string>
-#include "../../driver/include/serialport.h"
+#include "../../driver/include/SerialPort.h"
 
 using namespace std;
 
@@ -9,7 +9,6 @@ namespace nw{
     class CameraParam
     {
     public:
-        static int camera_kind;
         static int device_type;
         static string sn,video_path,picture_path;
         static int ecposure_time;

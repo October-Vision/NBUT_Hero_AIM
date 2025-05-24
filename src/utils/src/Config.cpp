@@ -1,4 +1,4 @@
-#include "../include/config.h"
+#include "../include/Config.h"
 
 using namespace nw;
 using namespace std;
