@@ -5,6 +5,7 @@
 
 using namespace std;
 
+
 namespace nw{
     class CameraParam
     {
