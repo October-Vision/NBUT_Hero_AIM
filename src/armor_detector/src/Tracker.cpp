@@ -297,7 +297,7 @@ void nw::Tracker::track(const Mat &frame) {
         this->_state = OCCLUDE;
     }
 }
-Point2i ly::Tracker::performTrack() {
+Point2i nw::Tracker::performTrack() {
     Mat mat_correlation, idft_correlation;
 
     mulSpectrums(this->curr_image.image_sepctrum, this->_filter, mat_correlation, 0, false);
