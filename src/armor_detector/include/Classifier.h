@@ -23,7 +23,7 @@ namespace nw{
            
         private:
             Ptr<ml::SVM> svm;
-            HDGDercriptor hog;
+            HOGDescriptor hog;
             Mat armor;
             vector<float> decs;
     };
@@ -35,12 +35,12 @@ namespace nw{
             const Mat& getArmor();
         private:
             Ptr<ml::SVM> svm;
-            HDGDercriptor hog;
+            HOGDescriptor hog;
             Mat armor;
             vector<float> decs;
     };
     class CNN :public Classifier{
-        pubulic:
+        public:
             CNN();
             int predict(const Mat& frame) override;
             int predict(const Mat& frame,float &prob,float prob_thresh);

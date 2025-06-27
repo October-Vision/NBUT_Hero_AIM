@@ -1,12 +1,12 @@
 #ifndef NUMBER_CLASSIFIER_H
 #define NUMBER_CLASSIFIER_H
 #include "Config.h"
-#include "opencv2/opencv.hpp"
+#include <opencv2/opencv.hpp>
 #include "opencv2/ml/ml.hpp"
 #include <string>
 #define ROI_MEAN_THRESH 185
 #define ROI_THRESH_MIN 20
-
+using namespace cv;
 namespace nw
 {
     class NumberClassifier
@@ -38,7 +38,7 @@ namespace nw
 
         std::string armor_classify_type[9] = {"Undefined", "Hero", "Engineer", "Infantry", "Infantry", "Infantry", "Sentry", "Outpost", "Base"};
 
-        // debug
+        // debug用
         cv::Mat armor_to_show;
         cv::Mat save;
 
@@ -49,6 +49,7 @@ namespace nw
         cv::dnn::Net net_;
         std::vector<std::string> class_names_;
 
+        // resnet
         void softmax(Mat &mat);
 
     public:
@@ -59,6 +60,6 @@ namespace nw
 
         int numbers_ = 0;
     };
-} // namespace nw
+}
 
-#endif // NUMBER_CLASSIFIER_H
+#endif //NUMBER_CLASSIFIER_H

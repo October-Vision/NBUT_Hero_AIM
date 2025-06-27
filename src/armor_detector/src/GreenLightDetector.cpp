@@ -1,53 +1,61 @@
 #include "GreenLightDetector.hpp"
-
 using namespace nw;
-using namespace cv;
-using namespace std;
+GreenLightDetector::GreenLightDetector() {
+    ie = ov::Core();
+    compiled_model = ie.compile_model(this->model_path, "CPU",ov::hint::performance_mode(ov::hint::PerformanceMode::THROUGHPUT));
+    infer_request = compiled_model.create_infer_request();
+}
+GreenLightDetector::GreenLightDetector(string model_path) {
+    ie = ov::Core();
+    compiled_model = ie.compile_model(model_path, "CPU",ov::hint::performance_mode(ov::hint::PerformanceMode::THROUGHPUT));
 
-GreenLightDetector::GreenLightDetector(){
-    ie=ov::Core();
-    compiled_model=ie.compile_model(this->model_path,"CPU",ov::hint::performance_mode(ov::hint::PerformanceMode::THROUGHPUT));
-    infer_request=compiled_model.create_infer_request();
+    infer_request = compiled_model.create_infer_request();
 }
-GreenLightDetector::GreenLightDetector(string model_path){
-    ie=ov::Core();
-    compiled_model=ie.compile_model(model_path,"CPU",ov::hint::performance_mode(ov::hint::PerformanceMode::THROUGHPUT));
-    infer_request=compiled_model.create_infer_request();
-}
-GreenLightDetector::~GreenLightDetector(){
+
+GreenLightDetector::~GreenLightDetector() {
 
 }
-Rect2f GreenLightDetector::getROI(Mat img,bbox result){
-    float x1 = result.x1 
-    float y1 = result.y1 
-    float x2 = result.x2 
-    float y2 = result.y2 
-    float wight=x2-x1;
-    float height=y2-y1;
-    return Rect2f(x1, y1, wight, height);
+
+Rect2f GreenLightDetector::getROI(cv::Mat img, bbox result) {
+
+    float x1 = result.x1;
+    float y1 = result.y1;
+    float x2 = result.x2;
+    float y2 = result.y2;
+    float width = x2 - x1;
+    float height = y2 - y1;
+
+    return Rect2f(x1, y1, width, height);
 }
-void GreenLightDetector::VisualzeResult(const Mat &img,bbox result){
-    rectangle(img,point(result.x1,result.y1),point(result.x2,result.y2),Scalar(0,255,0),2);
-    string label =class_names[result.class_id] + ": " + to_string(result.score).substr(0,4);
-    Size textSize=getTextSize(label,FONT_HERSHEY_SIMPLEX,0.5,1,0);
-    Rect2f textBox(result.x1, result.y1-15, textSize.width, textSize.height + 5);
+
+void GreenLightDetector::visualizeResult(const Mat &img, bbox result) {
+    rectangle(img, Point(result.x1, result.y1), Point(result.x2, result.y2), Scalar(0, 255, 0), 2);
+    // labelname
+    std::string label = class_names[result.class_id] + ":" + std::to_string(result.score).substr(0, 4);
+    Size textSize = cv::getTextSize(label, FONT_HERSHEY_SIMPLEX, 0.5, 1, 0);
+    // conf
+    Rect2f textBox(result.x1, result.y1 - 15, textSize.width, textSize.height+5);
     cv::rectangle(img, textBox, Scalar(0, 255, 0), FILLED);
-    putText(img,label,point(result.x1,result.y1-5),FONT_HERSHEY_SIMPLEX, 0.5, Scalar(255, 255, 255));
+    putText(img, label, Point(result.x1, result.y1 - 5), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(255, 255, 255));
 }
 
-Mat GreenLightDetector::letterbox(const cv::Mat& source){
-    int col=source.cols;
-    int row=source.rows;
-    int _max=MAX(col,row);
-    Mat result=Mat::zeros(_max,_max,CV_8UC3);
-    source.copyTo(result(Rect2f(0,0,col,row)));
+Mat GreenLightDetector::letterbox(const cv::Mat& source)
+{
+    int col = source.cols;
+    int row = source.rows;
+    int _max = MAX(col, row);
+    Mat result = Mat::zeros(_max, _max, CV_8UC3);
+    source.copyTo(result(Rect2f(0, 0, col, row)));
     return result;
 }
 
-void GreenLightDetector::detect(const Mat img,vector<Rect2f> &rois,Mat &debugImg,double score_threshold);{
+void GreenLightDetector::detect(const Mat img, vector<Rect2f> &rois, Mat &debugImg, double score_threshold) {
+    // Preprocess the image
+    // 测预处理时间
+
     Mat letterbox_img = letterbox(img);
-    float scale=letterbox_img.size[0]/IMG_SIZE;
-    Mat blob=dnn::blobFromImage(letterbox_img,1.0f/255.0f,Size(IMG_SIZE,IMG_SIZE),Scalar(),true);
+    float scale = letterbox_img.size[0] / IMG_SIZE;
+    Mat blob = dnn::blobFromImage(letterbox_img, 1.0 / 255.0, Size(IMG_SIZE, IMG_SIZE), Scalar(), true);
     // -------- Step 5. Feed the blob into the input node of the Model -------
     // Get input port for model with one input
 

@@ -4,7 +4,7 @@
 #include <opencv2/opencv.hpp>
 #include <vector>
 
-#include "Parmas.h"
+#include "Params.h"
 #include "Log.h"
 
 using namespace std;
@@ -15,7 +15,7 @@ namespace nw {
         public:
             LightBarFinder();
             bool findLightBarBlobs(const Mat& img, LightBarBlobs& lightBarBlobs);
-            static inline bool isVaildLightBarBlob(const RotgatedRect&)
+            static inline bool isVaildLightBarBlob(const RotatedRect&);
         private:
         static inline bool checkAspectRatio(double);
         static inline bool checkArea(double);

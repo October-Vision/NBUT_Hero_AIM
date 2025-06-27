@@ -2,8 +2,9 @@
 #define svm 0
 #define mlp 1
 #define resnet 2
-
-namespace nw{
+using namespace cv;
+namespace nw
+{
     NumberClassifier::NumberClassifier(int mode)
     {
 

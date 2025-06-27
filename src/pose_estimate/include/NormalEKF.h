@@ -72,3 +72,4 @@ namespace nw{
             double detect_param = 0;
     };
 }
+#endif //_NORMAN_EKF_H

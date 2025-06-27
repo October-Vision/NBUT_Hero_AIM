@@ -12,7 +12,7 @@ namespace nw{
     public:
         static int device_type;
         static string sn,video_path,picture_path;
-        static int ecposure_time;
+        static int exposure_time;
         static double gain;
         static float gamma;
         static double yaw;
@@ -27,13 +27,15 @@ namespace nw{
 
         static double height;
         static double width;
+        static double offset_x;
+        static double offset_y;
     private:
     };
 
-    class Detectorparam{
+    class DetectorParam{
         public:
             static string color;
-            static string thresh;
+            static int thresh;
         private:
     };
 
@@ -81,8 +83,8 @@ namespace nw{
             static bool enable;
             static string device_name;
             static SerialPortData recv_data;
-            static SerialPortWriteData send_data;  
-            static vector<string> send_data_sets;
+            static SerialPortWriteData send_data;
+            static vector<SerialPortData> serial_data_sets;
             static int set_id;
         private:
     };
@@ -106,7 +108,9 @@ namespace nw{
         AUTOAIM,
         ANTITOP,
         OUTPOST,
-        GREEN_SHOOT,
+        Half_OUTPOST,
+        AUTOAIM_WITH_ROI,
+        GREEN_SHOOT
     }STATE;
     
     typedef enum{

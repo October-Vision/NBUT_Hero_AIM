@@ -20,13 +20,13 @@ namespace nw {
         }
        return max_arg;
     }
-    inline cv::Mat scaleResize(cv::Mat& img,Eigen::Matrix<float,3,3> &transaction_matrix){
+    inline cv::Mat scaledResize(cv::Mat& img,Eigen::Matrix<float,3,3> &transform_matrix){
         float r=std::min(INPUT_W/(img.cols*1.0),INPUT_H/(img.rows*1.0));
         int unpad_w=r*img.cols;
         int unpad_h=r*img.rows;
 
-        int dw=INPUT_W-uppad_w;
-        int dh=INPUT_H-uppad_h;
+        int dw=INPUT_W-unpad_w;
+        int dh=INPUT_H-unpad_h;
 
         dw/=2;
         dh/=2;
@@ -34,7 +34,7 @@ namespace nw {
                             0,   1.0/r, -dh/r,
                             0,   0,      1.0;
         cv::Mat resized_img;
-        cv::resize(img,result_img,cv::Size(unpad_w,unpad_h));
+        cv::resize(img, resized_img, cv::Size(unpad_w,unpad_h));
         cv::Mat out;
         cv::copyMakeBorder(resized_img,out,dh,dh,dw,dw,cv::BORDER_CONSTANT);
 
@@ -55,7 +55,7 @@ namespace nw {
         }
     }
 
-    static void generateYOLOXProposals(std::vector<GridAndStride> grid_strides, const float* feat_ptr,
+    static void generateYoloxProposals(std::vector<GridAndStride> grid_strides, const float* feat_ptr,
                                         Eigen::Matrix<float,3,3> &transform_matrix,float prob_threshold,
                                         std::vector<ArmorObject>& objects) {
             const int num_anchors=grid_strides.size();

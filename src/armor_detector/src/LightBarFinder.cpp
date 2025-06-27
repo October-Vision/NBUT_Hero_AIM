@@ -48,7 +48,7 @@ bool LightBarFinder::findLightBarBlobs(const Mat &frame, LightBarBlobs &lightBar
     findContours(mat, contours, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);
     for(const auto& contour: contours){
         const RotatedRect& rrect = minAreaRect(contour);
-        if(isValidLightBarBlob(rrect)){
+        if(isVaildLightBarBlob(rrect)){
             lightBarBlobs.emplace_back(rrect);
         }
     }
@@ -60,7 +60,7 @@ bool LightBarFinder::findLightBarBlobs(const Mat &frame, LightBarBlobs &lightBar
     return lightBarBlobs.size() >= 2;
 }
 
-bool LightBarFinder::isValidLightBarBlob(const RotatedRect& rrect){
+bool LightBarFinder::isVaildLightBarBlob(const RotatedRect& rrect){
     if(
             checkAspectRatio(rrect.size.aspectRatio()) &&
             checkArea(rrect.size.area()) && 

@@ -8,7 +8,7 @@
 #include <opencv2/opencv.hpp>
 #include <openvino/openvino.hpp>
 
-using namespace std;
+using namespace cv;
 using namespace std;
 
 struct bbox
@@ -22,31 +22,42 @@ struct bbox
 };
 
 namespace nw{
-    class GreenLightDetector{
+    class GreenLightDetector {
         public:
             GreenLightDetector();
             GreenLightDetector(string model_path);
             ~GreenLightDetector();
-            void detect(const Mat img, vector<Rect2f> &rois, Mat &debugImg, double conf_thresh=0.45);
-            Rect2f getROI(cv::Mat img,bbox result);
-            void VisualzeResult(const cv::Mat &img, bbox &results);
+            void detect(const Mat img, vector<Rect2f> &rois, Mat &debugImg, double conf_thresh = 0.45);
+            Rect2f getROI(cv::Mat img, bbox result);
+            void visualizeResult(const cv::Mat &img, bbox result);
         private:
-            const double IMG_SIZE=384;
-            std::string model_path="./model/0801_384nano_green_openvino_model/0801_384nano_green.xml";
-            float nms_threshold = 0.45f;
-            double p_width=1.0f;
-            double p_height=1.0f;
+            ///////////// 参数 //////////////
+            const double IMG_SIZE = 384;
+            std::string model_path = "./model/0801_384nano_green_openvino_model/0801_384nano_green.xml";
+        //    float score_threshold = 0.25;
+            float nms_threshold = 0.45;
+
+            double p_width = 1.0; // 将模型得到的ROI的长宽适当扩大 p 倍
+            double p_height = 1.0;
+            ////////////////////////////////
+
             ov::Core ie;
             ov::CompiledModel compiled_model;
             ov::InferRequest infer_request;
 
+
             ov::Tensor input_tensor;
-            ov::Tensor output_tersor;
+            ov::Tensor output_tensor;
             ov::Shape input_shape;
             ov::Shape output_shape;
 
-            const std::vector<std::string> class_names = {"blue","red"};
+
+
+            const std::vector<std::string> class_names = {
+                    "blue", "red" };
+
             Mat letterbox(const cv::Mat& source);
+
     };
 }
 #endif //AUTOAIM_GREENLIGHTDETECTOR_HPP

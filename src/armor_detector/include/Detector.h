@@ -49,7 +49,7 @@ namespace nw
     public:
         explicit Detector();
         ~Detector() = default;
-        void setParams(const Params_ToVideo &params_to_video, const Params_ToSerialPort &params_to_serial_port);
+        void setParams(const Params_ToVideo &params_to_video, const Params_ToSerialPort &Params_ToSerialPort);
         void startDetect(const Params_ToDetector &params, SerialPort* SerialPort_);
         void outpostMode();
 

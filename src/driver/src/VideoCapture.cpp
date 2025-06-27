@@ -5,21 +5,25 @@
 using namespace nw;
 using namespace cv;
 
-nw:: VideoCapture::videoCapture(){
+nw::VideoCapture::VideoCapture(){
     width = CameraParam::width;
     height = CameraParam::height;
     offset_x = CameraParam::offset_x;
     offset_y = CameraParam::offset_y;
 }
 
+nw::VideoCapture::~VideoCapture() {
+
+}
+
 void nw::VideoCapture::chooseCameraType(nw::VideoCapture *&video){
-    switch(CameraParams::device_type){
-        case DaHen:
+    switch(CameraParam::device_type){
+        case Dahen:
             video = new DaHenCamera();
             break;
-        case Hik:
-            video = new HikCamera();
-            break;
+        // case Hik:
+        //     video = new HikCamera();
+        //     break;
         case Video:
             video = new NativeVideo();
             break;

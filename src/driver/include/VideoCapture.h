@@ -4,11 +4,11 @@
 #include <opencv2/opencv.hpp>
 
 #include "Params.h"
-#include "log.h"
+#include "Log.h"
 #include "SerialPort.h"
 #include "GxCamera.h"
 #include "Thread.h"
-#include "HikCamera.h" 
+// #include "HikCamera.h" 
 using namespace cv;
 namespace nw{
     void *saveFrameToNavtive(void *params_p);
@@ -28,53 +28,54 @@ namespace nw{
             Mat* mat;
             std::chrono::steady_clock::time_point time_stamp;
             SerialPortData imu_data;
-        private:
-    };
+    }; 
 
-    struct VideoCapture
+    struct Params_ToVideo
     {
-        cv::VideoCapture video; //相机
-        Image **frame_pp; //图像 
-        void *_this;
-        VideoWriter writer; //写入
+        cv::VideoCapture video;        // 相机
+        Image **frame_pp;              // Image
+        void *__this;
+        VideoWriter writer;            // 写入 
 
-        Params_Tovideo(){
-            frame_pp=(Image **)malloc(sizeof(Image*));
-            *frame_pp=new Image();
+        Params_ToVideo()
+        {
+            frame_pp = (Image **)malloc(sizeof(Image *));
+            *frame_pp = new Image();
         }
         ~Params_ToVideo(){
             free(*frame_pp);
             free(frame_pp);
         }
-    };
+    }; 
+
     class VideoCapture
     {
-    public:
-        VideoCapture();
-        ~VideoCapture();
-        virtual void open() = 0;
-        virtual void startCapture(Params_ToVideo &) = 0;
-        void startSave(Params_ToVideo &params_to_video);
-        void chooseCameraType(VideoCapture *&);
+        public:
+            VideoCapture();
+            ~VideoCapture();
+            virtual void open() = 0;
+            virtual void startCapture(Params_ToVideo &) = 0;
+            void startSave(Params_ToVideo &params_to_video);
+            void chooseCameraType(VideoCapture *&);
 
-    protected:
-        double rate{};
-        int _id;
-        uint16_t height;
-        uint16_t width;
-        uint16_t offset_x;
-        uint16_t offset_y;
+        protected:
+            double rate{};
+            int _id;
+            uint16_t height;
+            uint16_t width;
+            uint16_t offset_x;
+            uint16_t offset_y;
 
-        pthread_t threadID{};
-        pthread_t threadID2{};
+            pthread_t threadID{};
+            pthread_t threadID2{};
 
-        Params_ToVideo _video_thread_params;
+            Params_ToVideo _video_thread_params;
 
-        VideoWriter writer;
+            VideoWriter writer;
 
-        SerialPort *_serial_port;
-        SerialPortData *_data_read;
-    };
+            SerialPort *_serial_port;
+            SerialPortData *_data_read;
+    }; 
 
     class DaHenCamera : public VideoCapture
     {
@@ -86,7 +87,6 @@ namespace nw{
 
     private:
         GxCamera *camera;
-        //        int _id;
     };
 
     class NativeVideo : public VideoCapture
@@ -112,18 +112,18 @@ namespace nw{
         string base_dir;
         string suffix;
         int id = 0;
-    };
+    }; 
 
-    class HikCamera : public VideoCapture
-    {
-        public:
-            explicit HikCamera();
-            ~HikCamera();
-            void open() override;
-            void startCapture(Params_ToVideo &) override;
-        private:
-            void *cameraHandle;
-            bool isOpen;
-    }
+    // class HikCamera : public VideoCapture
+    // {
+    //     public:
+    //         explicit HikCamera();
+    //         ~HikCamera();
+    //         void open() override;
+    //         void startCapture(Params_ToVideo &) override;
+    //     private:
+    //         void *cameraHandle;
+    //         bool isOpen;
+    // }; 
 }
 #endif //AUTOAIM_VIDEOCAPTURE_H

@@ -26,6 +26,8 @@ void Config::parse()
     CameraParam::video_path = root["camera"]["video_path"].asString();
     CameraParam::picture_path = root["camera"]["picture_path"].asString();
     CameraParam::camera_type = root["camera"]["camera_type"].asInt();
+    CameraParam::height=root["camera"]["size"]["height"].asInt();
+    CameraParam::width=root["camera"]["size"]["width"].asInt();
     DLOG(INFO) << "camera type: " << CameraParam::camera_type << "mm";
     if(CameraParam::camera_type == 8){
         CameraParam::exposure_time = root["camera"]["camera_8mm_param"]["exposure_time"].asInt();

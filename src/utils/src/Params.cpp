@@ -28,6 +28,8 @@ namespace nw{
     double CameraParam::camera_trans_z;
     double CameraParam::height;
     double CameraParam::width;
+    double CameraParam::offset_x;
+    double CameraParam::offset_y;
 
     string DetectorParam::color;
     int DetectorParam::thresh;

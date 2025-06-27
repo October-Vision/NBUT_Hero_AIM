@@ -66,3 +66,5 @@ namespace nw{
             // VehicleFrame data2;
     };
 }
+
+#endif //PRIDICTOR_H

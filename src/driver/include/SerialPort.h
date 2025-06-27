@@ -7,7 +7,7 @@
 #include <cstdio>
 #include <iostream>
 
-#include "log.h"
+#include "Log.h"
 
 
 using namespace std;

@@ -1,5 +1,7 @@
 #include "YOLOv10Detector.hpp"
 
+using namespace nw;
+
 YOLOv10Detector::YOLOv10Detector(const std::string &model_path, const float &model_confidence_threshold) {
     model_input_shape_ = cv::Size(640, 640); // Set the default size for models with dynamic shapes to prevent errors.
     model_confidence_threshold_ = model_confidence_threshold;
