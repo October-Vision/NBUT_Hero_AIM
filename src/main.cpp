@@ -1,6 +1,6 @@
 #include <main.h>
 
-using namespace nw; //命名空间
+using namespace nw;
 int main(int argc, char *argv[]) {
     Params_ToSerialPort params_to_serial_port(&SerialParam::recv_data);
     Params_ToVideo params_to_video;

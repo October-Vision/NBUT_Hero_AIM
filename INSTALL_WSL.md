@@ -45,7 +45,8 @@
 ## 十、🎯 G2O 安装
 `git clone https://github.com/RainerKuemmerle/g2o`
 
-## 十一、🎯 NBUT_HERO_AIM 安装
+## 十一、🎯 NBUT_HERO_AIM 安装   
+   暂时用不到
 1. 进入项目目录，打开 `./CMakeLists.txt` 文件进行如下修改：
    - 第 6 行添加 `"set(Sophus_DIR /path/to/source/code/Sophus)"`
    - 第 6 行添加 `"list(APPEND CMAKE_MODULE_PATH /path/to/source/code/g2o/cmake_modules/)"`
