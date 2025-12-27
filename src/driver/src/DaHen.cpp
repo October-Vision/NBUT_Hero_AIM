@@ -17,7 +17,15 @@ void DaHenCamera::startCapture(Params_ToVideo &params_to_video){
     int id = 0;
     constexpr int size = 10;
     Image frame[size];  // 创建10个
-    for(auto& m: frame) m.mat = new Mat(Size(1280, 1024), CV_32FC3);    // 初始化1280x1024大小
+    
+    // 使用配置的相机尺寸，而不是硬编码
+    int cam_width = static_cast<int>(CameraParam::width);
+    int cam_height = static_cast<int>(CameraParam::height);
+    LOG(INFO) << "DaHen Camera: Initializing frame buffer with size: " << cam_width << "x" << cam_height;
+    
+    // 使用正确的类型初始化Mat - 相机输出通常是8位无符号整数
+    for(auto& m: frame) m.mat = new Mat(Size(cam_width, cam_height), CV_8UC3);
+    
     std::chrono::steady_clock::time_point start, end;
     do {
         // DLOG(WARNING) <<"                                               Capture     ";

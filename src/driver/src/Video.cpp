@@ -28,7 +28,14 @@ void NativeVideo::startCapture(Params_ToVideo& params){
     int id = 0;
     constexpr int size = 10;
     Image frame[size];
-    for(auto& m: frame) m.mat = new Mat(Size(1280, 1024), CV_32FC3);
+    
+    // 获取视频的实际尺寸
+    int video_width = static_cast<int>(this->video.get(cv::CAP_PROP_FRAME_WIDTH));
+    int video_height = static_cast<int>(this->video.get(cv::CAP_PROP_FRAME_HEIGHT));
+    LOG(INFO) << "Initializing frame buffer with size: " << video_width << "x" << video_height;
+    
+    // 使用正确的类型和尺寸初始化Mat
+    for(auto& m: frame) m.mat = new Mat(Size(video_width, video_height), CV_8UC3);
 
     this->video >> *frame[id].mat;
     *_video_thread_params.frame_pp = &frame[id];
@@ -44,33 +51,46 @@ void NativeVideo::startCapture(Params_ToVideo& params){
         DLOG(WARNING) << "                                                              >>>>>  Camera " ;
         umtx_video.lock();
         DLOG(WARNING) << "                                                             umtx_video " ;
-        _video_thread_params.video >> *(frame[id].mat);
+        this->video >> *(frame[id].mat);
         
         // 检查是否到达视频结尾
         if(frame[id].mat->empty()) {
             LOG(INFO) << "Video reached end, restarting from beginning...";
-            // 重新打开视频文件，从头开始播放
-            _video_thread_params.video.set(cv::CAP_PROP_POS_FRAMES, 0);
-            _video_thread_params.video >> *(frame[id].mat);
+            // 重新设置视频位置到开头
+            this->video.set(cv::CAP_PROP_POS_FRAMES, 0);
+            this->video >> *(frame[id].mat);
             
             // 如果重新读取后仍然为空，说明视频文件有问题
             if(frame[id].mat->empty()) {
                 LOG(ERROR) << "Failed to restart video, trying to reopen file...";
-                _video_thread_params.video.release();
-                _video_thread_params.video.open(CameraParam::video_path);
-                if(!_video_thread_params.video.isOpened()) {
+                this->video.release();
+                this->video.open(CameraParam::video_path);
+                if(!this->video.isOpened()) {
                     LOG(ERROR) << "Failed to reopen video file!";
                     umtx_video.unlock();
                     break;
                 }
-                _video_thread_params.video >> *(frame[id].mat);
+                this->video >> *(frame[id].mat);
+                
+                // 最后一次检查，如果还是空的就退出
+                if(frame[id].mat->empty()) {
+                    LOG(ERROR) << "Video frame is still empty after reopen, exiting...";
+                    umtx_video.unlock();
+                    break;
+                }
             }
         }
         
-        (*_video_thread_params.frame_pp)->mat = frame[id].mat;
-        id = (id+1) % size;
-        Thread::image_is_update = true;
-        Thread::cond_is_update.notify_all();
+        // 只有在帧不为空时才更新
+        if(!frame[id].mat->empty()) {
+            (*_video_thread_params.frame_pp)->mat = frame[id].mat;
+            id = (id+1) % size;
+            Thread::image_is_update = true;
+            Thread::cond_is_update.notify_all();
+        } else {
+            LOG(ERROR) << "Skipping empty frame";
+        }
+        
         DLOG(WARNING) << "                                                              unlock  " ;
         umtx_video.unlock();
         DLOG(WARNING) << "                                                               end  " ;

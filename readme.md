@@ -104,3 +104,7 @@ if (_serial_port == nullptr) {
 3. `src/utils/data/video/` - 创建视频文件夹
 4. `src/utils/data/video/README.md` - 添加使用说明
 5.  编译测试通过
+
+
+## 注:
+视频模式下由于没有固定视频hight weight参数会导致，roi矩阵提取参数超高，

@@ -2,7 +2,7 @@
   "#camera": "包括 设备类型(0代表大恒相机), sn码(相机的唯一识别码), video_path(内录视频的保存地址), picture_path(内录装甲板图片的保存地址), size(图片的大小)",
   "camera": {
     "#device_type":"0是大恒，1是海康，2是视频，3是图片",
-    "device_type": 1,
+    "device_type": 2,
     "# sn": "FDF23060062",
     "sn": "FDF23060063",
     "#sn": "KE0190100493",
