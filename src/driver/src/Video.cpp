@@ -38,18 +38,41 @@ void NativeVideo::startCapture(Params_ToVideo& params){
     Mat hsv;
     double alpha = 1, beta = 30;
     unique_lock<mutex> umtx_video(Thread::mtx_image, defer_lock);
-    while(!(*_video_thread_params.frame_pp)->mat->empty()){
+    
+    // 视频循环播放
+    while(true){
         DLOG(WARNING) << "                                                              >>>>>  Camera " ;
         umtx_video.lock();
         DLOG(WARNING) << "                                                             umtx_video " ;
         _video_thread_params.video >> *(frame[id].mat);
+        
+        // 检查是否到达视频结尾
+        if(frame[id].mat->empty()) {
+            LOG(INFO) << "Video reached end, restarting from beginning...";
+            // 重新打开视频文件，从头开始播放
+            _video_thread_params.video.set(cv::CAP_PROP_POS_FRAMES, 0);
+            _video_thread_params.video >> *(frame[id].mat);
+            
+            // 如果重新读取后仍然为空，说明视频文件有问题
+            if(frame[id].mat->empty()) {
+                LOG(ERROR) << "Failed to restart video, trying to reopen file...";
+                _video_thread_params.video.release();
+                _video_thread_params.video.open(CameraParam::video_path);
+                if(!_video_thread_params.video.isOpened()) {
+                    LOG(ERROR) << "Failed to reopen video file!";
+                    umtx_video.unlock();
+                    break;
+                }
+                _video_thread_params.video >> *(frame[id].mat);
+            }
+        }
+        
         (*_video_thread_params.frame_pp)->mat = frame[id].mat;
         id = (id+1) % size;
         Thread::image_is_update = true;
         Thread::cond_is_update.notify_all();
         DLOG(WARNING) << "                                                              unlock  " ;
         umtx_video.unlock();
-        LOG_IF(ERROR, (*_video_thread_params.frame_pp)->mat->empty()) << "get empty picture mat!";
         DLOG(WARNING) << "                                                               end  " ;
         usleep(10000);
     }
