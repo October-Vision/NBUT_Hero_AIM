@@ -2,11 +2,11 @@
   "#camera": "包括 设备类型(0代表大恒相机), sn码(相机的唯一识别码), video_path(内录视频的保存地址), picture_path(内录装甲板图片的保存地址), size(图片的大小)",
   "camera": {
     "#device_type":"0是大恒，1是海康，2是视频，3是图片",
-    "device_type": 0,
+    "device_type": 2,
     "# sn": "FDF23060062",
     "sn": "FDF23060063",
     "#sn": "KE0190100493",
-    "video_path": "../src/utils/data/videos/red7.avi",
+    "video_path": "../src/utils/data/video/test.mp4",
     "picture_path": "../src/utils/data/pictures/armors/",
     "size": {
       "height": 1920,
@@ -117,11 +117,11 @@
   "#debug": "TODO: 在debug时需要用的参数, 在上场是注意设置enable为false, 内录视频、图片等, 要设置相应参数的true, 即下面的video, armor, 注意自启动时 socket 也要设置为false",
   "debug": {
     "#mode": "-1表示键鼠模式, 1表示辅瞄, 2表示前哨站（23赛季）, 3表示半速前哨站（23赛季）, 4表示使用固定ROI进行击打, 5表示原地旋转击打（新版本前哨站）, 6代表绿灯辅助吊射",
-    "mode": -1,
+    "mode": 1,
     "#colod": "自己的颜色，0表示蓝色, 1表示红色",
-    "color": 0,
+    "color": 1,
     "big_id": -1,
-    "enable": false,
+    "enable": true,
     "thresh": false,
     "verbuse": true,
     "video": true,

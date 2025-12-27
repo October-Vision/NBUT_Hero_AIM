@@ -5,7 +5,10 @@ project(main)
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2")
 set(CMAKE_CXX_STANDARD 17)
 set(Sophus_DIR /path/to/source/code/Sophus)
-list(APPEND CMAKE_MODULE_PATH /path/to/source/code/g2o/cmake_modules/)
+list(APPEND CMAKE_MODULE_PATH /home/wang/lib/g2o/cmake_modules)
+set(G2O_ROOT /home/wang/lib/g2o)
+find_package(G2O REQUIRED)
+# list(APPEND CMAKE_MODULE_PATH /path/to/source/code/g2o/cmake_modules/)
 set(CMAKE_PREFIX_PATH "/usr/local/include/opencv4/")
 set(OpenCV_DIR /usr/local/include/opencv4/)
 find_package(OpenCV 4 REQUIRED)
@@ -16,6 +19,7 @@ find_package(OpenCV 4 REQUIRED)
 # find_package(ngraph REQUIRED)
 # set(BOOST_ROOT "/usr/include/")
 find_package(Boost REQUIRED COMPONENTS system filesystem)
+find_package(jsoncpp REQUIRED)
 
 add_subdirectory(src/armor_detector)
 add_subdirectory(src/pose_estimate)
@@ -46,6 +50,7 @@ add_executable(main
 
 
 target_link_libraries(main
+        ${JSONCPP_LIBRARIES}
         utils
         driver
         armor_detector

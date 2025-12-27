@@ -73,7 +73,10 @@ namespace nw
             }
             catch (...)
             {
-                LOG(ERROR) << "create serial port object error! ";
+                LOG(WARNING) << "Failed to connect to real serial port, using virtual serial port mode (IMU data will be 0)";
+                this->_serial_port = nullptr;  // 标记为虚拟串口模式
+                _data_tmp = (uint8_t *)malloc((size_t)_data_len);
+                pingpong = (uint8_t *)malloc((size_t)_data_len * 2);
             }
         }
     }
@@ -88,6 +91,11 @@ namespace nw
     // boost底层从串口读取数据
     void SerialPort::serialPortRead(uint8_t *msg, uint8_t max_len)
     {
+        // 虚拟串口模式：直接返回，不读取数据
+        if (_serial_port == nullptr) {
+            return;
+        }
+        
         try
         {
             read(*_serial_port, boost::asio::buffer(msg, max_len), _err);
@@ -101,6 +109,11 @@ namespace nw
     // boost底层向串口写入数据
     void SerialPort::serialPortWrite(uint8_t *msg, int len)
     {
+        // 虚拟串口模式：不写入数据
+        if (_serial_port == nullptr) {
+            return;
+        }
+        
         try
         {
             write(*_serial_port, boost::asio::buffer(msg, (size_t)len));
@@ -164,6 +177,23 @@ namespace nw
     // 从串口读取imu数据
     void SerialPort::readData(SerialPortData *imu_data)
     {
+        // 虚拟串口模式：返回全0的IMU数据
+        if (_serial_port == nullptr) {
+            imu_data->startflag = 0xA5;
+            imu_data->flag = 0;
+            imu_data->yaw = 0;
+            imu_data->pitch = 0;
+            imu_data->color = 101;  // 默认红色
+            imu_data->time_stamp = 0;
+            imu_data->roll = 0;
+            imu_data->right_clicked = 0;
+            imu_data->user_time_bias = 0;
+            imu_data->outpost_state = 0;
+            imu_data->crc = 0;
+            DLOG(INFO) << "Virtual serial port mode: returning zero IMU data";
+            return;
+        }
+        
         serialPortRead(_data_tmp, _data_len);
         memcpy(pingpong + _data_len, _data_tmp, _data_len);
         for (int start_bit = 0; start_bit < _data_len; start_bit++)
@@ -177,7 +207,7 @@ namespace nw
                     imu_data->flag = _data_tmp[1];
                     imu_data->pitch = (_data_tmp[3] << 8)                     // pitch数据
                                       | _data_tmp[2];
-                    imu_data->yaw = (((int)_data_tmp[7]) << 24)               // yaw轴数据                                 
+                    imu_data->yaw = (((int)_data_tmp[7]) << 24)               // yaw轴数据
                                     | (((int)_data_tmp[6]) << 16)
                                     | (((int)_data_tmp[5]) << 8)
                                     | (_data_tmp[4]);

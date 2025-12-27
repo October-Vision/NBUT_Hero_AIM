@@ -4,9 +4,17 @@ using namespace nw;
 using namespace cv;
 
 void NativeVideo::open(){
+    LOG(INFO) << "Attempting to open video file: " << CameraParam::video_path;
     this->video.open(CameraParam::video_path);
-    LOG_IF(ERROR,!video.isOpened()) << "video open failed"<<CameraParam::video_path;
-    LOG_IF(INFO,video.isOpened()) << "video open success"<<CameraParam::video_path;
+    if(!video.isOpened()) {
+        LOG(ERROR) << "Video open failed: " << CameraParam::video_path;
+    } else {
+        LOG(INFO) << "Video open success: " << CameraParam::video_path;
+        LOG(INFO) << "Video properties - Width: " << video.get(cv::CAP_PROP_FRAME_WIDTH)
+                  << ", Height: " << video.get(cv::CAP_PROP_FRAME_HEIGHT)
+                  << ", FPS: " << video.get(cv::CAP_PROP_FPS)
+                  << ", Frame count: " << video.get(cv::CAP_PROP_FRAME_COUNT);
+    }
 }
 
 void NativeVideo::startCapture(Params_ToVideo& params){
